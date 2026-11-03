@@ -1,26 +1,31 @@
 #ifndef ABB_HPP
 #define ABB_HPP
-#include "Animal.hpp"
+#include "AnimalABB.hpp"
 
 class ABB {
     private:
 
-    Animal* raiz; //no inicial da estrutura
+    AnimalBusca* raiz; //no inicial da estrutura
 
-    Animal* inserirRecursivo(Animal* atual, int id);
-    bool buscarRecursivo(Animal* no, int id) const;
-    Animal* removerRecursivo (Animal* no, int id);
-    void emOrdemRecursivo (Animal* no) const;
+    AnimalBusca* inserirRecursivo(AnimalBusca* atual, int id);
+    bool buscarRecursivo(AnimalBusca* no, int id) const;
+    AnimalBusca* removerRecursivo (AnimalBusca* no, int id);
+    void emOrdemRecursivo (AnimalBusca* no) const;
+    int alturaRecursiva(AnimalBusca* no) const;
+    int quantidadeNosRecursiva (AnimalBusca* no) const;
+    void liberarRecursivo(AnimalBusca* no);
 
     public:
 
     ABB() : raiz(nullptr) {};
+    ~ABB() {};
     void inserir(int id);
     bool buscar(int id) const;
     void remover(int id);
     void emOrdem() const;
-    int altura (Animal* no) const;
-    int quantNos (Animal* no) const;
+    int altura () const;
+    int quantidadeNos () const;
+    AnimalBusca* ABB::menorValor(AnimalBusca* no) const;
 
 };
 
