@@ -1,6 +1,9 @@
 #include <iostream>
 #include "Fila.hpp"
 
+Fila::Fila() {
+}
+
 void Fila::enfileirar(const Animal& animal) {
     animais.push(animal);
 }
@@ -63,4 +66,17 @@ int Fila::obterTamanho() const {
 
 bool Fila::estaVazia() const {
     return animais.empty();
+}
+
+bool Fila::pesquisarTutor(const std::string& nomeTutor, Animal& encontrado, ContadoresPesquisa& c){ //Alterações
+    queue<Animal> copia = animais;
+    while (!copia.empty()) {
+        c.comparacoes++;
+        if (copia.front().nomeTutor == nomeTutor) {
+            encontrado = copia.front();
+            return true;
+        }
+        copia.pop();
+    }
+    return false;
 }

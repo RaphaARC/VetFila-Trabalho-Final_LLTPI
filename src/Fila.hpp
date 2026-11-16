@@ -1,13 +1,13 @@
 #ifndef FILA_HPP
 #define FILA_HP
-
+#include "Pesquisa.hpp"
 #include <queue>
 #include "Animal.hpp"
 
 class Fila {
 private:
     std::queue<Animal> animais; 
-    // Fila de animais, usando std:: queue para facilitar a implementação, colocando a struct Animal como tipo de dado da fila
+    // Fila de animais, usando std::queue para facilitar a implementação, colocando a struct Animal como tipo de dado da fila
 
 public:
     Fila();
@@ -17,6 +17,7 @@ public:
     int obterTamanho() const; // Retorna o tamanho da fila
     void consultarProximo() const; // Consulta o próximo animal na fila de espera sem removê-lo
     void mostrarFila() const; // Exibe todos os animais na fila
+    bool pesquisarTutor(const std::string& nomeTutor, Animal& encontrado, ContadoresPesquisa& c);// Alterações
 };
 
 #endif //FILA_HPP

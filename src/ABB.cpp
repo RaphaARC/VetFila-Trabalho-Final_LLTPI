@@ -1,11 +1,11 @@
-#include "Animal.hpp"
+#include "AnimalABB.hpp"
 #include "ABB.hpp"
 #include <iostream>
 using namespace std;
 
 // insere um animal na árvore
-Animal* ABB::inserirRecursivo(Animal* atual, int id){
-    if(atual == nullptr){return new Animal(id);}
+AnimalBusca* ABB::inserirRecursivo(AnimalBusca* atual, int id){
+    if(atual == nullptr){return new AnimalBusca(id);}
     if(id < atual -> ID){
         atual -> esq = inserirRecursivo(atual -> esq, id);
     }else if(id > atual -> ID){
@@ -16,36 +16,65 @@ Animal* ABB::inserirRecursivo(Animal* atual, int id){
 
 // usa inserir recursivo para inserir um animal na árvore
 void ABB::inserir(int id){
-    inserirRecursivo(raiz, id);
+    raiz = inserirRecursivo(raiz, id);
 }
 
 // busca um animal na árvore e retorna true se tiver encontrado e false se não
-bool ABB::buscarRecursivo(Animal* no, int id) const{
+bool ABB::buscarRecursivo(AnimalBusca* no, int id, ContadoresPesquisa& c) const{
     if(no == nullptr){return false;}
+    c.comparacoes++;
     if(id == no->ID){return true;}
-    if(id < no->ID){buscarRecursivo(no->esq, id);}
-    if(id > no->ID){buscarRecursivo(no->dir, id);}
+    c.comparacoes++;
+    if(id < no->ID){return buscarRecursivo(no->esq, id, c);}
+    return buscarRecursivo(no->dir, id, c);
 }
 
 // utiliza buscarRecursivo para buscar um animal na árvore usando o id como chave
-bool ABB::buscar(int id) const{
-    buscarRecursivo(raiz, id);
+bool ABB::buscar(int id, ContadoresPesquisa& c) const{
+    return buscarRecursivo(raiz, id, c);
 }
 
-Animal* ABB::removerRecursivo(Animal* no, int id) {
-    if(no == nullptr){return no;}
-    if(id == no -> ID) {
-        Animal* aux = no;
-        delete aux;
-        return no;
-    }else if(id < no ->ID){
-        removerRecursivo(no->esq, id);
+AnimalBusca* ABB::removerRecursivo(AnimalBusca* no, int id) {
+    if (no == nullptr) {
+        return nullptr;
     }
-    removerRecursivo(no->dir,id);
+    if (id < no->ID) {
+        no->esq = removerRecursivo(no->esq, id);
+    }
+    else if (id > no->ID) {
+        no->dir = removerRecursivo(no->dir, id);
+    }
+    else {
+        if (no->esq == nullptr && no->dir == nullptr) {
+            delete no;
+            return nullptr;
+        }
+        if (no->esq == nullptr) {
+            AnimalBusca* aux = no->dir;
+            delete no;
+            return aux;
+        }
+        if (no->dir == nullptr) {
+            AnimalBusca* aux = no->esq;
+            delete no;
+            return aux;
+        }
+        AnimalBusca* sucessor = no->dir;
+        while (sucessor->esq != nullptr) {
+            sucessor = sucessor->esq;
+        }
+        no->ID = sucessor->ID;
+        no->dir = removerRecursivo(no->dir, sucessor->ID);
+    }
+    return no;
+}
+
+void ABB::remover(int id) {
+    raiz = removerRecursivo(raiz, id);
 }
 
 // imprime os animais em ordem crescente de ID
-void ABB::emOrdemRecursivo(Animal* no) const{ 
+void ABB::emOrdemRecursivo(AnimalBusca* no) const{ 
     if(no == nullptr) {return;} //caso base
     emOrdemRecursivo(no -> esq);
     cout << no -> ID;
@@ -55,4 +84,48 @@ void ABB::emOrdemRecursivo(Animal* no) const{
 // utiliza emOrdemRecursivo para mostrar os animais na árvore em ordem crescente referente aos IDs
 void ABB::emOrdem() const{
     emOrdemRecursivo(raiz);
+}
+
+void ABB::liberarRecursivo(AnimalBusca* no) {
+    if (no == nullptr) {
+        return;
+    }
+    liberarRecursivo(no->esq);
+    liberarRecursivo(no->dir);
+    delete no;
+}
+
+int ABB::alturaRecursiva(AnimalBusca* no) const {
+    if (no == nullptr) {
+        return -1;
+    }
+
+    int alturaEsq = alturaRecursiva(no->esq);
+    int alturaDir = alturaRecursiva(no->dir);
+
+    if (alturaEsq > alturaDir) {
+        return alturaEsq + 1;
+    }
+
+    return alturaDir + 1;
+}
+
+int ABB::altura(){
+    return alturaRecursiva(raiz);
+}
+
+int ABB::quantNosRecursivo(AnimalBusca* no) const {
+    if (no == nullptr) {
+        return 0;
+    }
+
+    return 1 + quantNosRecursivo(no->esq) + quantNosRecursivo(no->dir);
+}
+
+int ABB::quantNos(){
+    return quantNosRecursivo(raiz);
+}
+
+ABB::~ABB(){
+    liberarRecursivo(raiz);
 }
